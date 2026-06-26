@@ -1,11 +1,8 @@
 import heapq
 import itertools
 from puzzle.state import State, GOAL_STATE
-from puzzle import state
 from puzzle.base_search import BaseSearch
-from puzzle.state import GOAL_STATE, State
 from puzzle.result import SearchResult
-
 
 class AStar(BaseSearch):
 
@@ -23,7 +20,7 @@ class AStar(BaseSearch):
             tgt_row, tgt_col = divmod(target_idx, 3)
             total += abs(cur_row - tgt_row) + abs(cur_col - tgt_col)
 
-            return total
+        return total
 
     def search(self, initial: State) -> SearchResult:
         counter = itertools.count()
