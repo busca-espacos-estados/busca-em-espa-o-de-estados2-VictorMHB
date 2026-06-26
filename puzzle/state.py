@@ -25,19 +25,56 @@ class State:
         return self.tiles.index(0)
 
     def neighbors(self) -> List["State"]:
-        """Retorna os estados filhos válidos a partir deste estado."""
-        # TODO: implemente a geração de estados filhos
-        raise NotImplementedError
+        """Retorna uma lista de estados vizinhos alcançáveis a partir deste estado."""
+        moves = {
+            "UP": -3,
+            "DOWN": 3,
+            "LEFT": -1,
+            "RIGHT": 1,
+        }
+
+        blank = self.blank_index
+        row, col = divmod(blank, 3)
+        children: List["State"] = []
+
+        for action, delta in moves.items():
+            if action == "UP" and row == 0:
+                continue
+            if action == "DOWN" and row == 2:
+                continue
+            if action == "LEFT" and col == 0:
+                continue
+            if action == "RIGHT" and col == 2:
+                continue
+
+            new_index = blank + delta
+            new_tiles = list(self.tiles)
+            new_tiles[blank], new_tiles[new_index] = new_tiles[new_index], new_tiles[blank]
+
+            children.append(
+                State(
+                    tuple(new_tiles),
+                    parent=self,
+                    action=action,
+                    cost=self.cost + 1,
+                )
+            )
+
+        return children
 
     def path(self) -> List["State"]:
         """Retorna a sequência de estados do estado inicial até este."""
-        # TODO: implemente a reconstrução do caminho usando self.parent
-        raise NotImplementedError
+        states: List["State"] = []
+        current: Optional["State"] = self
+        while current is not None:
+            states.append(current)
+            current = current.parent
+        states.reverse()
+        return states
 
     def actions(self) -> List[str]:
         """Retorna a sequência de ações do estado inicial até este."""
-        # TODO: implemente usando path()
-        raise NotImplementedError
+        return [state.action for state in self.path() if state.action is not None]
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, State) and self.tiles == other.tiles
